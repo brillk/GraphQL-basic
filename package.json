@@ -1,0 +1,28 @@
+{
+  "name": "graphql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start":"nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brillk/GraphQL-basic.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brillk/GraphQL-basic/issues"
+  },
+  "homepage": "https://github.com/brillk/GraphQL-basic#readme",
+  "dependencies": {
+    "apollo-server": "^3.8.1",
+    "graphql": "^16.5.0"
+  },
+  "devDependencies": {
+  "nodemon": "^2.0.16"
+  },
+  "type": "module"
+}
