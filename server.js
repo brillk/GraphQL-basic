@@ -14,6 +14,18 @@ Apollo server를 써서 GraphQL을 구현해보자
  */
 import { ApolloServer, gql } from "apollo-server";
 
+//allTweets의 로직을 짜보기 위해 가짜 DB를 만들자 => resolver
+const tweets = [
+  {
+    id: "1",
+    text: "first",
+  },
+  {
+    id: "2",
+    text: "second",
+  },
+];
+
 const typeDefs = gql`
   type User {
     id: ID!
@@ -25,7 +37,7 @@ const typeDefs = gql`
   type Tweet {
     id: ID!
     text: String!
-    author: User!
+    author: User
   }
 
   type Query {
@@ -35,7 +47,7 @@ const typeDefs = gql`
 
   type Mutation {
     postTweet(text: String!, userId: ID!): Tweet!
-    deleteTweet(id:ID!): Boolean!
+    deleteTweet(id: ID!): Boolean!
   }
 `;
 /*
@@ -54,7 +66,25 @@ POST method와 같다 type Mutation
 
 */
 
-const server = new ApolloServer({ typeDefs });
+// 위처럼 데이터의 타입을 정하고
+// 데이터를 받을 수 있는 로직을 짜야하는데
+// 그걸 resolver라고 부른다
+
+const resolvers = {
+  Query: {
+    allTweets() {
+      return tweets;
+    },
+    tweet(root, { id }) {
+      // 아이디를 확인해 트윗을 만듬
+      console.log(id);
+      return tweets.find(tweet => tweet.id === id);
+    },
+    //argument를 보낼때, resolver function의 두번째가 args다
+  },
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
 server.listen().then(({ url }) => {
   console.log(`Running on ${url}`);
 });
