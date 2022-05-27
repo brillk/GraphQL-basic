@@ -26,10 +26,23 @@ let tweets = [
   },
 ];
 
+let users = [
+  {
+    id: "1",
+    firstName: "kim",
+    lastName: "jh",
+  },
+  {
+    id: "2",
+    firstName: "lee",
+    lastName: "qwe",
+  },
+];
+
 const typeDefs = gql`
   type User {
     id: ID!
-    username: String!
+    fullName: String!
     firstName: String!
     lastName: String!
   }
@@ -41,6 +54,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
   }
@@ -80,6 +94,9 @@ const resolvers = {
       // 아이디를 확인해 트윗을 만듬
       return tweets.find(tweet => tweet.id === id);
     },
+    allUsers() {
+      return users;
+    },
   },
   //argument를 보낼때, resolver function의 두번째가 args다
   Mutation: {
@@ -97,6 +114,11 @@ const resolvers = {
       if (!tweet) return false; // 없으면 false를 받기
       tweets = tweets.filter(tweet => tweet.id !== id);
       return true;
+    },
+  },
+  User: {
+    fullName({ firstName, lastName }) {
+      return `${firstName} ${lastName}`;
     },
   },
 };
