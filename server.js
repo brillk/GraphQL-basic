@@ -15,7 +15,7 @@ Apollo server를 써서 GraphQL을 구현해보자
 import { ApolloServer, gql } from "apollo-server";
 
 //allTweets의 로직을 짜보기 위해 가짜 DB를 만들자 => resolver
-const tweets = [
+let tweets = [
   {
     id: "1",
     text: "first",
@@ -71,16 +71,33 @@ POST method와 같다 type Mutation
 // 그걸 resolver라고 부른다
 
 const resolvers = {
+  // Query type의 resolver는 이렇게
   Query: {
     allTweets() {
       return tweets;
     },
     tweet(root, { id }) {
       // 아이디를 확인해 트윗을 만듬
-      console.log(id);
       return tweets.find(tweet => tweet.id === id);
     },
-    //argument를 보낼때, resolver function의 두번째가 args다
+  },
+  //argument를 보낼때, resolver function의 두번째가 args다
+  Mutation: {
+    postTweet(_, { text, userId }) {
+      //추가하기
+      const newTweet = {
+        id: tweets.length + 1,
+        text,
+      };
+      tweets.push(newTweet);
+      return newTweet;
+    },
+    deleteTweet(_, { id }) {
+      const tweet = tweets.find(tweet => tweet.id === id); //tweet을 찾는다
+      if (!tweet) return false; // 없으면 false를 받기
+      tweets = tweets.filter(tweet => tweet.id !== id);
+      return true;
+    },
   },
 };
 
@@ -88,6 +105,7 @@ const server = new ApolloServer({ typeDefs, resolvers });
 server.listen().then(({ url }) => {
   console.log(`Running on ${url}`);
 });
+
 // Error: Apollo Server requires either an existing schema, modules or typeDefs
 // 위의 에러는 graphQL이 data의 shape를 미리 알고 있어야하기 때문이다
 
