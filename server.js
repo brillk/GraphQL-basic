@@ -14,15 +14,17 @@ Apollo server를 써서 GraphQL을 구현해보자
  */
 import { ApolloServer, gql } from "apollo-server";
 
-//allTweets의 로직을 짜보기 위해 가짜 DB를 만들자 => resolver
+//allTweets의 로직을 짜보기 위해 가짜 DB를 만들자 => for resolver
 let tweets = [
   {
     id: "1",
     text: "first",
+    userId: "2",
   },
   {
     id: "2",
     text: "second",
+    userId: "1",
   },
 ];
 
@@ -35,18 +37,24 @@ let users = [
   {
     id: "2",
     firstName: "lee",
-    lastName: "qwe",
+    lastName: "ky",
+  },
+  {
+    id: "3",
+    firstName: "ryu",
+    lastName: "kang",
   },
 ];
 
 const typeDefs = gql`
   type User {
     id: ID!
+    """ Is the sum of firstName + lastName """
     fullName: String!
     firstName: String!
     lastName: String!
   }
-
+  """ Tweeter going to Die? """
   type Tweet {
     id: ID!
     text: String!
@@ -61,6 +69,7 @@ const typeDefs = gql`
 
   type Mutation {
     postTweet(text: String!, userId: ID!): Tweet!
+    """ Delete a Tweet if found, else return false """
     deleteTweet(id: ID!): Boolean!
   }
 `;
@@ -101,10 +110,14 @@ const resolvers = {
   //argument를 보낼때, resolver function의 두번째가 args다
   Mutation: {
     postTweet(_, { text, userId }) {
+      // 코드 챌린지 user database에 userId가 없는지를 체크하는 것
+      const user = users.find(user => user.id === userId);
+      if (user === -1) throw new Error("Can't post without userId");
       //추가하기
       const newTweet = {
         id: tweets.length + 1,
         text,
+        userId,
       };
       tweets.push(newTweet);
       return newTweet;
@@ -119,6 +132,14 @@ const resolvers = {
   User: {
     fullName({ firstName, lastName }) {
       return `${firstName} ${lastName}`;
+    },
+  },
+  //지금까지 한걸 이용해 User과 Tweet를 연결해보자
+  Tweet: {
+    author({ userId }) {
+      return users.find(user => user.id === userId);
+
+      //userId를 기준으로 찾는다
     },
   },
 };
