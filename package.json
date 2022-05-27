@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -19,10 +19,11 @@
   "homepage": "https://github.com/brillk/GraphQL-basic#readme",
   "dependencies": {
     "apollo-server": "^3.8.1",
-    "graphql": "^16.5.0"
+    "graphql": "^16.5.0",
+    "node-fetch": "^3.2.4"
   },
   "devDependencies": {
-  "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16"
   },
   "type": "module"
 }

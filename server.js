@@ -13,7 +13,7 @@ REST API의 단점을 보완
 Apollo server를 써서 GraphQL을 구현해보자
  */
 import { ApolloServer, gql } from "apollo-server";
-
+import fetch from "node-fetch"
 //allTweets의 로직을 짜보기 위해 가짜 DB를 만들자 => for resolver
 let tweets = [
   {
@@ -62,15 +62,42 @@ const typeDefs = gql`
   }
 
   type Query {
+    allMovies: [Movie!]!
     allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
+    movie(id: String!):Movie
   }
 
   type Mutation {
     postTweet(text: String!, userId: ID!): Tweet!
     """ Delete a Tweet if found, else return false """
     deleteTweet(id: ID!): Boolean!
+  }
+
+  
+  type Movie  {
+  id: Int!
+  url: String!
+  imdb_code: String!
+  title: String!
+  title_english: String!
+  title_long: String!
+  slug: String!
+  year: Int!
+  rating: Float!
+  runtime: Float!
+  genres: [String]!
+  summary: String
+  description_full: String!
+  synopsis: String
+  yt_trailer_code: String!
+  language: String!
+  background_image: String!
+  background_image_original: String!
+  small_cover_image: String!
+  medium_cover_image: String!
+  large_cover_image: String!
   }
 `;
 /*
@@ -106,6 +133,16 @@ const resolvers = {
     allUsers() {
       return users;
     },
+    allMovies() {
+      return fetch("https://yts.mx/api/v2/list_movies.json")
+        .then(r => r.json())
+        .then(json => json.data.movies);
+    },
+    movie(_, {id}) {
+      return fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+      .then(r => r.json())
+      .then(json => json.data.movie);
+    }
   },
   //argument를 보낼때, resolver function의 두번째가 args다
   Mutation: {
@@ -142,6 +179,7 @@ const resolvers = {
       //userId를 기준으로 찾는다
     },
   },
+  Movie: {},
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
