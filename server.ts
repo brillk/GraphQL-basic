@@ -16,24 +16,26 @@ import { ApolloServer, gql } from "apollo-server";
 
 const typeDefs = gql`
   type User {
-    id: ID
-    username: String
+    id: ID!
+    username: String!
+    firstName: String!
+    lastName: String!
   }
 
   type Tweet {
-    id: ID
-    text: String
-    author: User
+    id: ID!
+    text: String!
+    author: User!
   }
 
   type Query {
-    allTweets: [Tweet]
-    tweet(id: ID): Tweet
+    allTweets: [Tweet!]!
+    tweet(id: ID!): Tweet
   }
 
   type Mutation {
-    postTweet(text: String, userId: ID): Tweet
-    deleteTweet(id:ID): Boolean
+    postTweet(text: String!, userId: ID!): Tweet!
+    deleteTweet(id:ID!): Boolean!
   }
 `;
 /*
@@ -45,6 +47,11 @@ const typeDefs = gql`
 Mutations 
 POST method와 같다 type Mutation
 또한 DELETE, PUT도 Mutation에서 작동한다
+
+기본적으로 타입을 정해줄때, 모든 타입은 null이 될 수도 있다
+하지만 타입 끝에 !를 달아준다면 그 타입은 required 돼서 무조건 조건을 적어줘야됨
+그리고 절대 null로 리턴하지 않는다고 확신할때 쓴다
+
 */
 
 const server = new ApolloServer({ typeDefs });
